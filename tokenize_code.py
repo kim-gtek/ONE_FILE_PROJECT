@@ -1,4 +1,5 @@
 import os
+import json
 from tkinter import Tk
 from tkinter.filedialog import askdirectory
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
@@ -56,9 +57,14 @@ else:
     # Tokenize the codebase with TOC
     inputs = tokenizer(codebase_with_toc, return_tensors="pt", truncation=True, padding="longest", max_length=512)
 
-    # Print tokenization results for verification
-    print("Input IDs:", inputs["input_ids"])
-    print("Attention Mask:", inputs["attention_mask"])
+    # Save tokenized inputs to files
+    tokenized_output_path = os.path.join(selected_directory, "tokenized_codebase.json")
+    with open(tokenized_output_path, "w") as f:
+        json.dump({
+            "input_ids": inputs["input_ids"].tolist(),
+            "attention_mask": inputs["attention_mask"].tolist()
+        }, f, indent=4)
 
     print(f"Annotated codebase with TOC has been saved to '{output_file_path}'.")
+    print(f"Tokenized version has been saved to '{tokenized_output_path}'.")
     print("Tokenization completed.")
